@@ -59,9 +59,8 @@ namespace ReactwithDotnetCore.Controllers
 
         private string GenerateJSONWebToken(User userInfo)
         {
-            string key = _config["Jwt:Key"].PadRight(32) ?? string.Empty;
             // Ensure the key has at least 256 bits
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"].PadRight(32)));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
