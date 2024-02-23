@@ -35,8 +35,7 @@ namespace ReactwithDotnetCore.Controllers
                 using IDbConnection dbConnection = new SqlConnection(_connectionString);
                 dbConnection.Open();
 
-                // Assuming your table name is 'Students'
-                string query = "INSERT INTO Students (name, email, phone, image) VALUES (@Name, @Email, @Phone, @Image)";
+                string query = "INSERT INTO TBLB_Student (name, email, phone, image) VALUES (@Name, @Email, @Phone, @Image)";
                 int rowsAffected = await dbConnection.ExecuteAsync(query, student);
 
                 if (rowsAffected > 0)
@@ -60,11 +59,47 @@ namespace ReactwithDotnetCore.Controllers
         {
             try
             {
+                /*
+                
+                //This code assumes that the token is in the "Bearer <token>" format in the Authorization header. 
+                //It splits the header and takes the last part as the token for validation. If your token format is 
+                //different, adjust the code accordingly.
+
+                // Retrieve the user name from the claims
+                var userName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Retrieve the token from the Authorization header
+                var token = HttpContext.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Unauthorized("Token not provided");
+                }
+
+                // Validate the token
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration?["Jwt:Issuer"]?.ToString(),
+                    ValidAudience = configuration?["Jwt:Audience"]?.ToString(),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration?["Jwt:Key"]?.PadRight(32)))
+                };
+
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+                // At this point, the token is valid, and you can retrieve additional claims
+                var dateOfJoin = principal.FindFirst("DateOfJoin")?.Value;
+
+                */
+
                 using IDbConnection dbConnection = new SqlConnection(_connectionString);
                 dbConnection.Open();
 
-                // Assuming your table name is 'Students'
-                string query = "SELECT * FROM Students";
+                string query = "SELECT * FROM TBLB_Student";
                 var students = await dbConnection.QueryAsync<Student>(query);
 
                 return Ok(students);
@@ -74,7 +109,6 @@ namespace ReactwithDotnetCore.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-
 
         [HttpPost("insertstudent")]
         public async Task<IActionResult> InsertStudent(Student student)
@@ -87,12 +121,12 @@ namespace ReactwithDotnetCore.Controllers
                 if (student.rollNumber.HasValue && student.rollNumber > 0)
                 {
                     // Update record if rollNumber is greater than 0
-                    string updateQuery = "UPDATE Students SET name = @Name, email = @Email, phone = @Phone, image = @Image WHERE rollNumber = @rollNumber;";
+                    string updateQuery = "UPDATE TBLB_Student SET name = @Name, email = @Email, phone = @Phone, image = @Image WHERE rollNumber = @rollNumber;";
                     int rowsAffected = await dbConnection.ExecuteAsync(updateQuery, student);
 
                     if (rowsAffected > 0)
                     {
-                        string query = "SELECT * FROM Students";
+                        string query = "SELECT * FROM TBLB_Student";
                         var students = await dbConnection.QueryAsync<Student>(query);
 
                         return Ok(students);
@@ -105,12 +139,12 @@ namespace ReactwithDotnetCore.Controllers
                 else
                 {
                     // Insert record if rollNumber is not provided or less than or equal to 0
-                    string insertQuery = "INSERT INTO Students (name, email, phone, image) VALUES (@Name, @Email, @Phone, @Image);";
+                    string insertQuery = "INSERT INTO TBLB_Student (name, email, phone, image) VALUES (@Name, @Email, @Phone, @Image);";
                     int rowsAffected = await dbConnection.ExecuteAsync(insertQuery, student);
 
                     if (rowsAffected > 0)
                     {
-                        string query = "SELECT * FROM Students";
+                        string query = "SELECT * FROM TBLB_Student";
                         var students = await dbConnection.QueryAsync<Student>(query);
 
                         return Ok(students);
@@ -135,8 +169,7 @@ namespace ReactwithDotnetCore.Controllers
                 using IDbConnection dbConnection = new SqlConnection(_connectionString);
                 dbConnection.Open();
 
-                // Assuming your table name is 'Students'
-                string query = "DELETE FROM Students WHERE rollNumber = @rollNumber";
+                string query = "DELETE FROM TBLB_Student WHERE rollNumber = @rollNumber";
                 int rowsAffected = await dbConnection.ExecuteAsync(query, new { RollNumber = rollNumber });
 
                 if (rowsAffected > 0)

@@ -13,7 +13,6 @@ namespace ReactwithDotnetCore.Controllers
 {
     public class LoginController(IConfiguration configuration) : Controller
     {
-        private readonly IConfiguration _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
         private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string is missing.");
 
         [AllowAnonymous]
@@ -60,7 +59,7 @@ namespace ReactwithDotnetCore.Controllers
         private string GenerateJSONWebToken(User userInfo)
         {
             // Ensure the key has at least 256 bits
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"].PadRight(32)));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration?["Jwt:Key"]?.PadRight(32)));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
@@ -70,8 +69,8 @@ namespace ReactwithDotnetCore.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                _config["Jwt:Audience"],
+            var token = new JwtSecurityToken(configuration?["Jwt:Issuer"],
+                configuration?["Jwt:Audience"],
                 claims,
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: credentials);
