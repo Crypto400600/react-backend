@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,15 @@ namespace ReactwithDotnetCore.Controllers
         {
             // Replace this with your actual logic
             var dummyData = new List<string> { "Dummy1", "Dummy2", "Dummy3" };
+            return Ok(dummyData);
+        }
+
+        [Authorize]
+        [HttpGet("dummy2")]
+        public IActionResult GetDummyData2()
+        {
+            // Replace this with your actual logic
+            var dummyData = new List<string> { "Dummy1", "Dummy2", "Dummy3", "Dummy4" };
             return Ok(dummyData);
         }
     }

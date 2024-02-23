@@ -24,33 +24,7 @@ namespace ReactwithDotnetCore.Controllers
             public string? name { get; set; }
             public string? email { get; set; }
             public string? phone { get; set; }
-            public string? image { get; set; }
-        }
-
-        [HttpPost("studentdatapost")]
-        public async Task<IActionResult> StudentData2(Student student)
-        {
-            try
-            {
-                using IDbConnection dbConnection = new SqlConnection(_connectionString);
-                dbConnection.Open();
-
-                string query = "INSERT INTO TBLB_Student (name, email, phone, image) VALUES (@Name, @Email, @Phone, @Image)";
-                int rowsAffected = await dbConnection.ExecuteAsync(query, student);
-
-                if (rowsAffected > 0)
-                {
-                    return Ok(student);
-                }
-                else
-                {
-                    return BadRequest("Failed to insert the student record.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
+            public string? image { get; set; } = "default.png";
         }
 
         [Authorize]
@@ -96,11 +70,7 @@ namespace ReactwithDotnetCore.Controllers
 
                 */
 
-                using IDbConnection dbConnection = new SqlConnection(_connectionString);
-                dbConnection.Open();
-
-                string query = "SELECT * FROM TBLB_Student";
-                var students = await dbConnection.QueryAsync<Student>(query);
+                var students = await GetStudents();
 
                 return Ok(students);
             }
@@ -110,8 +80,8 @@ namespace ReactwithDotnetCore.Controllers
             }
         }
 
-        [HttpPost("insertstudent")]
-        public async Task<IActionResult> InsertStudent(Student student)
+        [HttpPost("insertorupdatestudent")]
+        public async Task<IActionResult> InsertOrUpdateStudent(Student student)
         {
             try
             {
@@ -126,10 +96,7 @@ namespace ReactwithDotnetCore.Controllers
 
                     if (rowsAffected > 0)
                     {
-                        string query = "SELECT * FROM TBLB_Student";
-                        var students = await dbConnection.QueryAsync<Student>(query);
-
-                        return Ok(students);
+                        return await GetStudents();
                     }
                     else
                     {
@@ -144,10 +111,7 @@ namespace ReactwithDotnetCore.Controllers
 
                     if (rowsAffected > 0)
                     {
-                        string query = "SELECT * FROM TBLB_Student";
-                        var students = await dbConnection.QueryAsync<Student>(query);
-
-                        return Ok(students);
+                        return await GetStudents();
                     }
                     else
                     {
@@ -158,6 +122,23 @@ namespace ReactwithDotnetCore.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        private async Task<IActionResult> GetStudents()
+        {
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_connectionString);
+                dbConnection.Open();
+                string query = "SELECT * FROM TBLB_Student WITH(NOLOCK);";
+                var students = await dbConnection.QueryAsync<Student>(query);
+                return Ok(students);
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                throw;
             }
         }
 
