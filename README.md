@@ -1,1 +1,1 @@
-React Front End <a href="https://github.com/ajayvishu/react-frontend">React Front End 8.0</a>
+React JS FrontEnd Code <a href="https://github.com/ajayvishu/react-frontend">React JS FrontEnd</a>
